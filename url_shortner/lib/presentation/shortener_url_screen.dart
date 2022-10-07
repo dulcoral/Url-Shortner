@@ -1,8 +1,11 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_shortner/constants/app_sizes.dart';
+import 'package:url_shortner/constants/app_strings.dart';
 import 'package:url_shortner/domain/entities.dart/shorten_url.dart';
 import 'package:url_shortner/presentation/url_viewmodel.dart';
+import 'package:url_shortner/styles/text_style.dart';
 import 'package:url_shortner/utils/utils.dart';
 
 class ShortenerUrlScreen extends ConsumerStatefulWidget {
@@ -25,13 +28,15 @@ class _ShortenerUrlScreenState extends ConsumerState<ShortenerUrlScreen> {
     super.initState();
   }
 
-  void getShortenUrl() async {
-    if (originalUrl.isNotEmpty && Utils().isValidUrl(originalUrl)) {
+  void getShortenUrl() {
+    if (items.isNotEmpty && items.first.self == originalUrl) {
+      showSnackErrorBar(AppStrings.existUrl);
+    } else if (originalUrl.isNotEmpty && Utils().isValidUrl(originalUrl)) {
       viewModel.createUrlAlias(originalUrl);
-      setState(() {});
     } else {
-      showSnackErrorBar();
+      showSnackErrorBar(AppStrings.errorSnackErrorUrl);
     }
+    FocusScope.of(context).requestFocus(FocusNode());
   }
 
   void resetForm() {
@@ -39,10 +44,19 @@ class _ShortenerUrlScreenState extends ConsumerState<ShortenerUrlScreen> {
     controller.text = '';
   }
 
-  void showSnackErrorBar() {
-    const snackBar = SnackBar(
-      content: Text('Please, enter a valid URL'),
+  void showSnackErrorBar(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
       backgroundColor: Colors.redAccent,
+      duration: const Duration(seconds: 1),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showCopiedSnackBar() {
+    const snackBar = SnackBar(
+      content: Text(AppStrings.copied),
+      backgroundColor: Colors.green,
       duration: Duration(seconds: 1),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -51,7 +65,15 @@ class _ShortenerUrlScreenState extends ConsumerState<ShortenerUrlScreen> {
   void handleShortenUrlResult() {
     final result =
         ref.watch(urlViewModelProvider.select((value) => value.result));
-    result?.fold((l) => showSnackErrorBar(), ((r) => items.add(r)));
+    result?.fold((l) => showSnackErrorBar(l.message), ((r) => addItemUrl(r)));
+  }
+
+  void addItemUrl(ShortenUrl shortenUrl) {
+    if (items.isEmpty ||
+        !items.contains(shortenUrl) ||
+        (items.contains(shortenUrl) && items.first != shortenUrl)) {
+      items.insert(0, shortenUrl);
+    }
   }
 
   @override
@@ -66,7 +88,7 @@ class _ShortenerUrlScreenState extends ConsumerState<ShortenerUrlScreen> {
     return SingleChildScrollView(
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(AppSizes.size_20),
           child: Center(
               child: Form(
                   autovalidateMode: AutovalidateMode.always,
@@ -94,12 +116,12 @@ class _ShortenerUrlScreenState extends ConsumerState<ShortenerUrlScreen> {
                                       });
                                     },
                                   ),
-                                  hintText: "Enter an URL to shorter"),
+                                  hintText: AppStrings.hintTextInputUrl),
                               keyboardType: TextInputType.url,
                               validator: (value) {
                                 if (value == null ||
                                     !Utils().isValidUrl(value) && value != '') {
-                                  return 'Invalidate Url';
+                                  return AppStrings.errorTextInputUrl;
                                 }
                                 return null;
                               },
@@ -116,31 +138,30 @@ class _ShortenerUrlScreenState extends ConsumerState<ShortenerUrlScreen> {
             alignment: Alignment.center,
             child: OutlinedButton(
               onPressed: resetForm,
-              child: const Text('Clear form'),
+              child: const Text(AppStrings.clearUrlInput),
             )),
         if (items.isNotEmpty)
-          Text('Recently shortened URLs',
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold)),
+          const Text(AppStrings.recentlyUrls, style: AppTextStyle.titleStyle),
         ListView.builder(
-            scrollDirection: Axis.vertical,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: items.toSet().length,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: items.length,
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
               return Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 3, 12, 7),
-                  child: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)),
-                      child: ListTile(
-                          title: SelectableText(
-                              items.toSet().toList()[index].short.toString()),
-                          subtitle: SelectableText(
-                              items.toSet().toList()[index].self.toString()))));
+                padding: const EdgeInsets.symmetric(
+                    vertical: AppSizes.size_12, horizontal: AppSizes.size_4),
+                child: Card(
+                    elevation: AppSizes.size_3,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.size_5)),
+                    child: ListTile(
+                        title: SelectableText(items[index].short.toString(),
+                            onTap: (() =>
+                                FlutterClipboard.copy(items[index].short)
+                                    .then((value) => showCopiedSnackBar()))),
+                        subtitle:
+                            SelectableText(items[index].self.toString()))),
+              );
             })
       ]),
     );

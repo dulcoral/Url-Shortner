@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:url_shortner/constants/app_strings.dart';
 import 'package:url_shortner/presentation/shortener_url_screen.dart';
+import 'package:url_shortner/styles/text_style.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -11,9 +13,8 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: Colors.blue,
           elevation: 3,
           title: const Text(
-            "Shorten Url Challenge",
-            style: TextStyle(
-                color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+            AppStrings.appString,
+            style: AppTextStyle.appBarTextStyle,
           ),
           centerTitle: false,
           automaticallyImplyLeading: false,

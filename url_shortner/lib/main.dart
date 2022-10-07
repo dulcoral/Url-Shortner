@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_shortner/constants/app_strings.dart';
 import 'package:url_shortner/presentation/home_screen.dart';
 
 void main() {
@@ -15,11 +16,11 @@ class MyApp extends StatelessWidget {
     return ProviderScope(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: AppStrings.appString,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: HomeScreen(),
+        home: const HomeScreen(),
       ),
     );
   }
