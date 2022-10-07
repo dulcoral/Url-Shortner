@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_shortner/constants/app_sizes.dart';
 import 'package:url_shortner/constants/app_strings.dart';
-import 'package:url_shortner/domain/entities.dart/shorten_url.dart';
+import 'package:url_shortner/domain/entities/shorten_url.dart';
 import 'package:url_shortner/presentation/url_viewmodel.dart';
 import 'package:url_shortner/styles/text_style.dart';
 import 'package:url_shortner/utils/utils.dart';
@@ -45,12 +45,14 @@ class _ShortenerUrlScreenState extends ConsumerState<ShortenerUrlScreen> {
   }
 
   void showSnackErrorBar(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.redAccent,
-      duration: const Duration(seconds: 1),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final snackBar = SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        duration: const Duration(seconds: 1),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
   }
 
   void showCopiedSnackBar() {

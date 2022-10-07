@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:url_shortner/domain/entities.dart/shorten_url.dart';
+import 'package:url_shortner/domain/entities/shorten_url.dart';
 
 class ShortenUrlModel extends Equatable {
   const ShortenUrlModel(

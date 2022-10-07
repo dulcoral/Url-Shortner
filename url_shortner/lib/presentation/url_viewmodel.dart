@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_shortner/data/app_repository.dart';
 import 'package:url_shortner/data/app_repository_impl.dart';
-import 'package:url_shortner/domain/entities.dart/app_error.dart';
-import 'package:url_shortner/domain/entities.dart/shorten_url.dart';
+import 'package:url_shortner/domain/entities/app_error.dart';
+import 'package:url_shortner/domain/entities/shorten_url.dart';
 
 final urlViewModelProvider =
     ChangeNotifierProvider((ref) => UrlViewModel(ref.read));

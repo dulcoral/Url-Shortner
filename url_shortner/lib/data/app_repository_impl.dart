@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_shortner/domain/entities.dart/app_error.dart';
+import 'package:url_shortner/domain/entities/app_error.dart';
 import 'package:url_shortner/data/app_repository.dart';
 import 'package:url_shortner/data/app_services.dart';
 import 'package:url_shortner/data/models/url_model.dart';
-import 'package:url_shortner/domain/entities.dart/shorten_url.dart';
+import 'package:url_shortner/domain/entities/shorten_url.dart';
 
 final appRepositoryProvider = Provider<AppRepository>(
     (ref) => AppRepositoryImpl(ref.read(appServicesProvider)));
