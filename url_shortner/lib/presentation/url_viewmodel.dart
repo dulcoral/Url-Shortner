@@ -21,8 +21,9 @@ class UrlViewModel with ChangeNotifier {
   Either<AppError, ShortenUrl>? get result => _result;
 
   Future<void> createUrlAlias(String url) async {
-    _result = await _repository
+    await _repository
         .createUrlAlias(url: url)
+        .then((value) => _result = value)
         .whenComplete(() => notifyListeners());
   }
 }
